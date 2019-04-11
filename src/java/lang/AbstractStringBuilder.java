@@ -44,6 +44,9 @@ abstract class AbstractStringBuilder implements Appendable, CharSequence {
     /**
      * The value is used for character storage.
      */
+    /**
+     * 与String类型不同，用的是非final修饰
+     */
     char[] value;
 
     /**

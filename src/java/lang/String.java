@@ -108,6 +108,9 @@ import java.util.regex.PatternSyntaxException;
 public final class String
     implements java.io.Serializable, Comparable<String>, CharSequence {
     /** The value is used for character storage. */
+    /**
+     * 用于存储字符串的char数组，使用final修饰，生成之后，不可以修改数组的内容，只能修改数组的引用。即，String实际意义上是不能修改的
+     */
     private final char value[];
 
     /** Cache the hash code for the string */
@@ -127,6 +130,9 @@ public final class String
      * The String is written by method <code>DataOutput.writeUTF</code>.
      * A new handle is generated to  refer to all future references to the
      * string instance within the stream.
+     */
+    /**
+     * 字符串序列化过程中的序列化对象
      */
     private static final ObjectStreamField[] serialPersistentFields =
             new ObjectStreamField[0];
@@ -533,6 +539,7 @@ public final class String
      */
     public String(byte bytes[], int offset, int length) {
         checkBounds(bytes, offset, length);
+        //TODO StringCoding自有的编码工具类
         this.value = StringCoding.decode(bytes, offset, length);
     }
 
@@ -566,6 +573,11 @@ public final class String
      *         A {@code StringBuffer}
      */
     public String(StringBuffer buffer) {
+        /**
+         * 加锁，防止在复制值得时候，stringbuffer会进行修改
+         * 缓存意味着有两层引用，相对于数组和stringbuilder，存在着修改的风险
+         * TODO Stringbuffer阅读时联合思考
+         */
         synchronized(buffer) {
             this.value = Arrays.copyOf(buffer.getValue(), buffer.length());
         }
@@ -972,6 +984,9 @@ public final class String
      * @see  #equalsIgnoreCase(String)
      */
     public boolean equals(Object anObject) {
+        /**
+         * 字符串的比较，最后其实是数组遍历进行比较
+         */
         if (this == anObject) {
             return true;
         }
@@ -1087,6 +1102,9 @@ public final class String
      * @see  #equals(Object)
      */
     public boolean equalsIgnoreCase(String anotherString) {
+        /**
+         * 个人点赞，这个多目表达式6
+         */
         return (this == anotherString) ? true
                 : (anotherString != null)
                 && (anotherString.value.length == value.length)
@@ -1153,6 +1171,7 @@ public final class String
         return len1 - len2;
     }
 
+    //TODO Comparator和cpmpareable的区别
     /**
      * A Comparator that orders <code>String</code> objects as by
      * <code>compareToIgnoreCase</code>. This comparator is serializable.
@@ -2415,6 +2434,10 @@ public final class String
         int firstUpper;
         final int len = value.length;
 
+        /**
+         * TODO goto语法
+         */
+
         /* Now check if there are any characters that need to be changed. */
         scan: {
             for (firstUpper = 0 ; firstUpper < len; ) {
@@ -2794,6 +2817,7 @@ public final class String
      * @since  1.5
      */
     public static String format(String format, Object... args) {
+        //TODO 公用格式化类
         return new Formatter().format(format, args).toString();
     }
 
